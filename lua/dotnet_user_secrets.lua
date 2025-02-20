@@ -62,6 +62,19 @@ local function select_file()
 	end
 end
 
+local function get_display_names(csproj_files)
+	local result = {}
+	for _, proj_file in ipairs(csproj_files) do
+		local t = {}
+		for str in string.gmatch(proj_file, "([^" .. "/" .. "]+)") do
+			-- insert the substring in table
+			table.insert(t, str)
+		end
+		table.insert(result, t[#t])
+	end
+	return result
+end
+
 -- Function to open a floating window for selecting a .csproj file
 local function open_selection_window(csproj_files)
 	-- Set window dimensions
@@ -75,7 +88,8 @@ local function open_selection_window(csproj_files)
 	vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf })
 
 	-- Set the content of the buffer
-	vim.api.nvim_buf_set_lines(buf, 0, -1, false, csproj_files)
+	local display_names = get_display_names(csproj_files)
+	vim.api.nvim_buf_set_lines(buf, 0, -1, false, display_names)
 
 	-- Create the floating window
 	local win = vim.api.nvim_open_win(buf, true, {
